@@ -9,12 +9,14 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-from decouple import config
+import os
 
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+SECRET_KEY = os.environ.get("85cc7e738c077dc57ad560cbe03df570", "unsafe-secret")
+DEBUG = os.environ.get("DEBUG") == "True"
 
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", ".onrender.com"
+).split(",")
 
 
 # Application definition
