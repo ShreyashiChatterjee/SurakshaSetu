@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SurakshaSetu</title>
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #e6f3ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        /* ===== LOGIN CONTAINER ===== */
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        /* ===== HEADER ===== */
+        .login-header { text-align: center; margin-bottom: 2rem; }
+        .login-header h1 { color: #8b5cf6; font-size: 2rem; margin-bottom: 0.5rem; }
+        .login-header p { color: #666; font-size: 0.95rem; }
+
+        /* ===== FORM STYLES ===== */
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #4b5563; font-size: 0.9rem; }
+        input {
+            width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb;
+            border-radius: 8px; font-size: 1rem; transition: all 0.3s ease;
+        }
+        input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1); }
+        input.error { border-color: #ef4444; }
+        .error-message { color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem; display: none; }
+        .error-message.show { display: block; }
+
+        /* ===== EMERGENCY CONTACTS SECTION ===== */
+        .emergency-section { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .section-header h2 { font-size: 1.1rem; color: #1f2937; }
+        
+        .add-btn {
+            background: #eff6ff; color: #3b82f6; border: 1px dashed #3b82f6;
+            padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+        }
+        .add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .contacts-info {
+            background: #eff6ff; border: 1px solid #3b82f6; padding: 0.75rem;
+            border-radius: 8px; font-size: 0.85rem; color: #1e40af; margin-bottom: 1rem;
+        }
+
+        .contact-card {
+            background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+            padding: 1.25rem; margin-bottom: 1rem; position: relative;
+        }
+
+        .remove-contact-btn {
+            position: absolute; top: 0.75rem; right: 0.75rem; background: #fee2e2;
+            color: #ef4444; border: none; width: 24px; height: 24px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold;
+        }
+        .contact-card h4 { font-size: 0.9rem; margin-bottom: 1rem; color: #4b5563; }
+
+        /* ===== BUTTONS ===== */
+        .login-btn {
+            width: 100%; background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
+            color: white; border: none; padding: 1rem; border-radius: 8px; font-size: 1rem;
+            font-weight: 600; cursor: pointer; margin-top: 1rem; transition: transform 0.2s;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+        .login-btn:disabled { opacity: 0.7; cursor: wait; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>SurakshaSetu</h1>
+            <p>Your safety is our priority. Please sign in to continue.</p>
+        </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" placeholder="Enter your full name">
+                <div id="name-error" class="error-message">Please enter your name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10">
+                <div id="phone-error" class="error-message">Please enter a valid 10-digit phone number</div>
+            </div>
+
+            <div class="emergency-section">
+                <div class="section-header">
+                    <h2>Emergency Contacts</h2>
+                    <button type="button" id="add-contact-btn" class="add-btn">+ Add Contact</button>
+                </div>
+                
+                <div id="contacts-info" class="contacts-info">
+                    Add at least 2 contacts to enable safety features
+                </div>
+
+                <div id="contacts-container">
+                    </div>
+            </div>
+
+            <button type="submit" class="login-btn">Secure Login</button>
+        </form>
+    </div>
+
+    <script>
+        // ===== DOM ELEMENTS =====
+        const loginForm = document.getElementById('login-form');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const nameError = document.getElementById('name-error');
+        const phoneError = document.getElementById('phone-error');
+        
+        const contactsContainer = document.getElementById('contacts-container');
+        const addContactBtn = document.getElementById('add-contact-btn');
+        const contactsInfo = document.getElementById('contacts-info');
+
+        // ===== STATE =====
+        let emergencyContacts = [];
+        const MIN_CONTACTS = 2;
+        const MAX_CONTACTS = 5;
+
+        // ===== UTILITY: GET CSRF TOKEN =====
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // ===== VALIDATION FUNCTIONS =====
+        function validateName() {
+            if (nameInput.value.trim() === '') {
+                nameInput.classList.add('error');
+                nameError.classList.add('show');
+                return false;
+            }
+            nameInput.classList.remove('error');
+            nameError.classList.remove('show');
+            return true;
+        }
+
+        function validatePhone() {
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phoneInput.value.trim())) {
+                phoneInput.classList.add('error');
+                phoneError.classList.add('show');
+                return false;
+            }
+            phoneInput.classList.remove('error');
+            phoneError.classList.remove('show');
+            return true;
+        }
+
+        function updateContactsInfo() {
+            const count = emergencyContacts.length;
+            if (count === 0) {
+                contactsInfo.textContent = 'Add at least 2 contacts to enable this feature';
+                contactsInfo.style.background = '#eff6ff';
+            } else if (count < MIN_CONTACTS) {
+                contactsInfo.textContent = `Add ${MIN_CONTACTS - count} more contact(s)`;
+                contactsInfo.style.background = '#fffbeb';
+            } else {
+                contactsInfo.textContent = `${count} contacts added. Maximum ${MAX_CONTACTS} allowed.`;
+                contactsInfo.style.background = '#ecfdf5';
+            }
+            addContactBtn.disabled = count >= MAX_CONTACTS;
+        }
+
+        function addContactCard() {
+            const index = emergencyContacts.length;
+            const card = document.createElement('div');
+            card.className = 'contact-card';
+            card.innerHTML = `
+                <button type="button" class="remove-contact-btn" onclick="removeContact(${index})">×</button>
+                <h4>Contact ${index + 1}</h4>
+                <div class="form-group">
+                    <input type="text" placeholder="Name" class="c-name" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" placeholder="10-digit Phone" class="c-phone" maxlength="10" required>
+                </div>
+            `;
+            contactsContainer.appendChild(card);
+            emergencyContacts.push({ name: '', phone: '' });
+            updateContactsInfo();
+        }
+
+        window.removeContact = function(index) {
+            emergencyContacts.splice(index, 1);
+            renderContacts();
+        };
+
+        function renderContacts() {
+            contactsContainer.innerHTML = '';
+            // Save current values before re-rendering would be complex, 
+            // for simplicity we just re-render the count.
+            // In a real app, you'd bind inputs to the array.
+            const tempCount = emergencyContacts.length;
+            emergencyContacts = [];
+            for(let i=0; i<tempCount; i++) {
+                 addContactCard();
+            }
+            updateContactsInfo();
+        }
+
+        // ===== MAIN SUBMIT HANDLER =====
+loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault(); // STOP THE PAGE RELOAD
+    console.log("Submit button clicked - Processing...");
+
+    if (!validateName() || !validatePhone()) {
+        console.log("Validation failed");
+        return;
+    }
+
+    // Collect Contact Data
+    const cards = contactsContainer.querySelectorAll('.contact-card');
+    const finalContacts = [];
+
+    cards.forEach(card => {
+        const cName = card.querySelector('.c-name').value.trim();
+        const cPhone = card.querySelector('.c-phone').value.trim();
+        if (cName && cPhone) {
+            finalContacts.push({ name: cName, phone: cPhone });
+        }
+    });
+
+    if (finalContacts.length > 0 && finalContacts.length < MIN_CONTACTS) {
+        alert(`Please add at least ${MIN_CONTACTS} contacts or remove all to skip.`);
+        return;
+    }
+
+    const userData = {
+        name: nameInput.value.trim(),
+        phone: phoneInput.value.trim(),
+        contacts: finalContacts
+    };
+
+    const submitBtn = loginForm.querySelector('.login-btn');
+    submitBtn.textContent = 'Authenticating...';
+    submitBtn.disabled = true;
+
+    try {
+        // Send login data to Django backend
+        const response = await fetch('/api/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        console.log("Server response:", data);
+
+        if (response.ok && data.status === 'success') {
+            localStorage.setItem('user', JSON.stringify({
+                id: data.user_id,
+                name: userData.name,
+                phone: userData.phone
+            }));
+            if (finalContacts.length >= MIN_CONTACTS) {
+                localStorage.setItem('emergencyContacts', JSON.stringify(finalContacts));
+            }
+            window.location.href = '/home/'; // ✅ Redirect to dashboard
+        } else {
+            alert(data.message || 'Login failed.');
+        }
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        alert('Connection failed. Check console for details.');
+    } finally {
+        submitBtn.textContent = 'Secure Login';
+        submitBtn.disabled = false;
+    }
+});
+
+// ===== INITIALIZATION =====
+addContactBtn.addEventListener('click', addContactCard);
+
+// Redirect if already logged in
+window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('user')) {
+        window.location.href = '/home/';
+    }
+});
+
+    </script>
+</body>
+</html>
