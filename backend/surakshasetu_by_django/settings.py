@@ -84,7 +84,7 @@ USE_TZ = True
 
 # Static & media files
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Whitenoise will serve static files
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Whitenoise will serve static files
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = '/media/'
